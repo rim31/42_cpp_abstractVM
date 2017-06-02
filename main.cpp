@@ -60,16 +60,44 @@ void parse_cmd(std::string buff, std::list<IOperand const *> mylist)
 
 }
 
+void checktype(std::string buff)
+{
+  if (buff.compare("push int8(") == 0)
+    std::cout << "you enter push int8( " << std::endl;
+  else if (buff.compare("push int16(") == 0)
+    std::cout << "you enter push int16( " << std::endl;
+  else if (buff.compare("push int32(") == 0)
+    std::cout << "you enter push int32( " << std::endl;
+  else if (buff.compare("push float(") == 0)
+    std::cout << "you enter push float( " << std::endl;
+  else if (buff.compare("push double(") == 0)
+    std::cout << "you enter push double( " << std::endl;
+}
+
 void my_split(const std::string s)
 {
   std::istringstream iss(s);
-
+  int i = 0;
+  int pushok = 0;
  while (iss)
  {
+   std::cout << "i et pushok " << i << pushok << std::endl;
     std::string sub;
     iss >> sub;
+    // parse_cmd(buff, mylist);
     if (sub.compare("") != 0)
       std::cout << "Substring: " << sub << std::endl;
+    if (sub.compare("push") == 0 && i == 0)
+    {
+      pushok = 1;
+      std::cout << "push OK " << sub << std::endl;
+    }
+    if (i == 1 && pushok == 1)
+    {
+      checktype(sub);
+      std::cout << "checktype OK " << sub << std::endl;
+    }
+    i++;
   }
 }
 
@@ -91,7 +119,7 @@ void parser(std::string str)
   while(buff.compare(";;") != 0)
   {
     if (!std::getline(std::cin, buff))
-      exit(0);
+      exit(0);//passer a la ligne suivante plutot
     // else if (buff.compare("push") == 0)
     //   std::cout << "you enter push " << std::endl;
     // else if (buff.compare("push int8(") == 0)
@@ -128,7 +156,6 @@ void parser(std::string str)
     //   std::cout << "you enter exit" << std::endl;
     else
       {
-        parse_cmd(buff, mylist);
         my_split(buff);
       }
       // mettre le bon type dans la stack
