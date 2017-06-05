@@ -134,28 +134,33 @@ std::list<IOperand const *> checktype(std::string buff, std::list<IOperand const
     if (buff.substr(0,5).compare("int8(") == 0)
     {
       std::cout << "you enter int8(" << std::endl;
-      if (checknumber(buff.substr(5,pos-5), 0, pos-5))
+      if (checknumber(buff.substr(5,pos-5), 0, pos-5)/*PENSER A VERIFIER LA TAILLE DU INT*/)
         mylist.push_front (fact.createOperand(Int8,buff.substr(5,pos-5)));
     }
     else if (buff.substr(0,6).compare("int16(") == 0)
     {
       std::cout << "you enter int16( " << std::endl;
-      checknumber(buff.substr(6,pos-6), 0, pos-6);
+      if (checknumber(buff.substr(6,pos-6), 0, pos-6)/*PENSER A VERIFIER LA TAILLE DU INT*/)
+        mylist.push_front (fact.createOperand(Int16,buff.substr(6,pos-6)));
     }
     else if (buff.substr(0,6).compare("int32(") == 0)
     {
       std::cout << "you enter int32( " << std::endl;
-      checknumber(buff.substr(6,pos-6), 0, pos-6);
+      if (checknumber(buff.substr(6,pos-6), 0, pos-6)/*PENSER A VERIFIER LA TAILLE DU INT*/)
+      mylist.push_front (fact.createOperand(Int32,buff.substr(6,pos-6)));
+
     }
     else if (buff.substr(0,6).compare("float(") == 0)
     {
       std::cout << "you enter float( " << std::endl;
-      checknumber(buff.substr(6,pos-6), 1, pos-6);
+      if (checknumber(buff.substr(6,pos-6), 1, pos-6)/*PENSER A VERIFIER LA TAILLE DU INT*/)
+        mylist.push_front (fact.createOperand(Float,buff.substr(6,pos-6)));
     }
     else if (buff.substr(0,7).compare("double(") == 0)
     {
       std::cout << "you enter double( " << std::endl;
-      checknumber(buff.substr(7,pos-7), 1, pos-7);
+      if (checknumber(buff.substr(7,pos-7), 1, pos-7)/*PENSER A VERIFIER LA TAILLE DU INT*/)
+        mylist.push_front (fact.createOperand(Double,buff.substr(7,pos-7)));
     }
   }
   else
