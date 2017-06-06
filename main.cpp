@@ -72,7 +72,10 @@ size_t findclose(std::string str)
   //   std::cout << " ) : pas trouve ERROR" << std::endl;
   // else
   //   std::cout << "position de ) -> "<< pos << std::endl;
-  return pos;
+  if (str.find(";") == pos + 1 || str.find(";") == std::string::npos)
+    return pos;
+  else
+    return std::string::npos;
 }
 
 int checknumber(std::string nb, int point, int pos)
@@ -113,19 +116,10 @@ int checknumber(std::string nb, int point, int pos)
 
 std::list<IOperand const *> checktype(std::string buff, std::list<IOperand const *> mylist)
 {
-//   if (buff[buff.length()-1] == '(')
-//     std::cout << "==>( " << std::endl;
-// else
-//     std::cout << "error, il manque le ) final" << std::endl;
-  // if (std::regex_match (buff, std::regex("(int8()(.*)") ))
-  //     std::cout << "string literal matched\n";
-  // else
-  //   std::cout << "rine trouve\n";
   std::size_t pos;
   std::size_t init;
   std::string str;
   Factory fact;
-  // std::list<IOperand const *> mylist;
 
   pos = findclose(buff);
   if (pos > 5 && pos != std::string::npos)
@@ -171,42 +165,76 @@ std::list<IOperand const *> checktype(std::string buff, std::list<IOperand const
 
 }
 
-std::list<IOperand const *> my_split(const std::string s, std::list<IOperand const *> mylist)
+int checknumberargument(const std::string s)
 {
+  std::istringstream iss(s);
+  int i = 0;
+  int error = 0;
+  Factory fact;
+  //1ere verification nombre d'argument
+  while (iss)
+  {
+     std::string sub;
+     iss >> sub;
+     if (i==3)
+     {
+       if (sub.substr(0,1).compare(";") == 0)
+        std::cout << "commentaire avec ; " << sub << std::endl;
+       else
+        {
+          std::cout << "trop de parametres " << sub << std::endl;
+          error = 1;
+        }
+     }
+     if (sub.compare("") != 0)
+      i++;
+   }
+  std::cout <<"error : "<< error << "i : " << i << std::endl;
+  return error;
+}
+
+std::list<IOperand const *> my_split(const std::string str, std::list<IOperand const *> mylist)
+{
+  //on cherche tout les ;
+  std::string s;
+  if (str.find(";") != std::string::npos)
+      s = str.substr(0,str.find(";"));
+
   std::istringstream iss(s);
   int i = 0;
   int pushok = 0;
   int assertok = 0;
   Factory fact;
-  // std::list<IOperand const *> mylist;
 
-  // std::cout << s << std::endl;
- while (iss)
- {
-  //  std::cout << "i et pushok " << i << pushok << std::endl;
-    std::string sub;
-    iss >> sub;
-    // parse_cmd(buff, mylist);
-    // if (sub.compare("") != 0)
-    //   std::cout << "VIDE !! " << sub << std::endl;
-    if (i>1)
-    {
-      if (sub.substr(0,1).compare(";") == 0)
-      std::cout << "commentaire avec ; " << sub << std::endl;
-      else if (sub.compare("") != 0)
-      std::cout << "Error trop de parametres " << sub << std::endl;
+  if (!checknumberargument(s))
+  {
+   while (iss)
+   {
+    //  std::cout << "i et pushok " << i << pushok << std::endl;
+      std::string sub;
+      iss >> sub;
+      // parse_cmd(buff, mylist);
+      // if (sub.compare("") != 0)
+      //   std::cout << "VIDE !! " << sub << std::endl;
+      if (i>1)
+      {
+        if (sub.substr(0,1).compare(";") == 0)
+          std::cout << "commentaire avec ; " << sub << std::endl;
+        else if (sub.compare("") != 0)
+          std::cout << "Error trop de parametres et pas commentaire" << sub << std::endl;
+      }
+      if ((sub.compare("push") == 0 && i == 0 )|| (sub.compare("assert") == 0 && i == 0))
+      {
+        pushok = 1;
+        std::cout << "changer PUSH/ASSERT a faire " << sub << std::endl;
+      }
+      if (i == 1 && pushok == 1)
+      {
+        mylist = checktype(sub, mylist);
+        // std::cout << "checktype OK " << sub << std::endl;
+      }
+      i++;
     }
-    if ((sub.compare("push") == 0 && i == 0 )|| (sub.compare("assert") == 0 && i == 0))
-    {
-      pushok = 1;
-      std::cout << "changer PUSH/ASSERT a faire " << sub << std::endl;
-    }
-    if (i == 1 && pushok == 1)
-    {
-      mylist = checktype(sub, mylist);
-      // std::cout << "checktype OK " << sub << std::endl;
-    }
-    i++;
   }
   return mylist;
 }
@@ -226,7 +254,7 @@ void parser(std::string str)
   if (!std::getline(std::cin, buff))
     exit(0);
     mylist = my_split(buff, mylist);
-  mylist.push_front (fact.createOperand(Int32,buff));
+  // mylist.push_front (fact.createOperand(Int32,buff));
   while(buff.compare(";;") != 0)
   {
     if (!std::getline(std::cin, buff))
