@@ -2,7 +2,6 @@
 #define FACTORY_HPP
 
 #include "IOperand.hpp"
-
 class Factory
 {
   //publlic constructor
@@ -25,6 +24,7 @@ class Factory
 
   IOperand const *(Factory::*create[5])(std::string const &) const;//// tableau pointeur sur fonction
 
+  // int checkTypeCreateOperand<T>(std::string const & value);
 
 };
 

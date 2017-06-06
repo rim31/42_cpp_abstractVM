@@ -68,16 +68,13 @@ size_t findclose(std::string str)
 {
   std::size_t pos;
   pos = str.find(")");
-  // if (pos - std::string::npos == 0)
-  //   std::cout << " ) : pas trouve ERROR" << std::endl;
-  // else
-  //   std::cout << "position de ) -> "<< pos << std::endl;
   if (str.find(";") == pos + 1 || str.find(";") == std::string::npos)
-    return pos;
+    return pos;//on regarde si on a bien un ; apres le )
   else
     return std::string::npos;
 }
 
+//=============== on regarde si on a bien un nombre +/- et . ==================
 int checknumber(std::string nb, int point, int pos)
 {
   int ret = 0;
@@ -93,7 +90,7 @@ int checknumber(std::string nb, int point, int pos)
     }
     if (nb[i] == '.')
       nombredepoint++;
-    else if (!isdigit(nb[i]))
+    else if (!isdigit(nb[i]) && nb[0] != '-')
     {
       std::cout << " pas numerique";
       return 0;
@@ -114,6 +111,8 @@ int checknumber(std::string nb, int point, int pos)
   return 0;
 }
 
+
+//================== on ajoute dans la liste avec le bon typ pour la COMMANDE PUSH ===============
 std::list<IOperand const *> checktype(std::string buff, std::list<IOperand const *> mylist)
 {
   std::size_t pos;
@@ -130,6 +129,9 @@ std::list<IOperand const *> checktype(std::string buff, std::list<IOperand const
       std::cout << "you enter int8(" << std::endl;
       if (checknumber(buff.substr(5,pos-5), 0, pos-5)/*PENSER A VERIFIER LA TAILLE DU INT*/)
         mylist.push_front (fact.createOperand(Int8,buff.substr(5,pos-5)));
+
+//http://en.cppreference.com/w/cpp/types/numeric_limits
+
     }
     else if (buff.substr(0,6).compare("int16(") == 0)
     {
@@ -162,7 +164,6 @@ std::list<IOperand const *> checktype(std::string buff, std::list<IOperand const
 
   return mylist;
   // mylist.push_front (fact.createOperand(Int32,buff));
-
 }
 
 int checknumberargument(const std::string s)
@@ -189,14 +190,14 @@ int checknumberargument(const std::string s)
      if (sub.compare("") != 0)
       i++;
    }
-  std::cout <<"error : "<< error << "i : " << i << std::endl;
+  std::cout <<"error : "<< error << " et i : " << i << std::endl;
   return error;
 }
 
 std::list<IOperand const *> my_split(const std::string str, std::list<IOperand const *> mylist)
 {
   //on cherche tout les ;
-  std::string s;
+  std::string s = str;
   if (str.find(";") != std::string::npos)
       s = str.substr(0,str.find(";"));
 
@@ -210,12 +211,9 @@ std::list<IOperand const *> my_split(const std::string str, std::list<IOperand c
   {
    while (iss)
    {
-    //  std::cout << "i et pushok " << i << pushok << std::endl;
       std::string sub;
       iss >> sub;
-      // parse_cmd(buff, mylist);
-      // if (sub.compare("") != 0)
-      //   std::cout << "VIDE !! " << sub << std::endl;
+
       if (i>1)
       {
         if (sub.substr(0,1).compare(";") == 0)
@@ -259,46 +257,10 @@ void parser(std::string str)
   {
     if (!std::getline(std::cin, buff))
       exit(0);//passer a la ligne suivante plutot
-    // else if (buff.compare("push") == 0)
-    //   std::cout << "you enter push " << std::endl;
-    // else if (buff.compare("push int8(") == 0)
-    //   std::cout << "you enter push int8( " << std::endl;
-    // else if (buff.compare("push int16(") == 0)
-    //   std::cout << "you enter push int16( " << std::endl;
-    // else if (buff.compare("push int32(") == 0)
-    //   std::cout << "you enter push int32( " << std::endl;
-    // else if (buff.compare("push float(") == 0)
-    //   std::cout << "you enter push float( " << std::endl;
-    // else if (buff.compare("push double(") == 0)
-    //   std::cout << "you enter push double( " << std::endl;
-    // else if (buff.compare("add") == 0)
-    //   std::cout << "you enter Add" << std::endl;
-    // else if (buff.compare("pop") == 0)
-    //   std::cout << "you enter pop" << std::endl;
-    // else if (buff.compare("dump") == 0)
-    //   std::cout << "you enter dump" << std::endl;
-    // else if (buff.compare("assert") == 0)
-    //   std::cout << "you enter assert VALUE" << std::endl;
-    // else if (buff.compare("add") == 0)
-    //   std::cout << "you enter add" << std::endl;
-    // else if (buff.compare("sub") == 0)
-    //   std::cout << "you enter sub" << std::endl;
-    // else if (buff.compare("mul") == 0)
-    //   std::cout << "you enter mul" << std::endl;
-    // else if (buff.compare("div") == 0)
-    //   std::cout << "you enter div" << std::endl;
-    // else if (buff.compare("mod") == 0)
-    //   std::cout << "you enter mod" << std::endl;
-    // else if (buff.compare("print") == 0)
-    //   std::cout << "you enter print" << std::endl;
-    // else if (buff.compare("exit") == 0)
-    //   std::cout << "you enter exit" << std::endl;
     else
       {
         mylist = my_split(buff, mylist);
       }
-      // mettre le bon type dans la stack
-      // mylist.push_front (fact.createOperand(Int32,buff));
   }
 
 
@@ -315,12 +277,7 @@ void parser(std::string str)
 
 
 
-
-
-
-
-
-
+//=====================OPERATION=========================
 
 
   IOperand const *i = new Operand<int>(Int32, "42");

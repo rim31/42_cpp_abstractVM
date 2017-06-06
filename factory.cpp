@@ -29,6 +29,18 @@
     return (*this);
   }
 
+//=================function check Type  value =================
+//  int Factory::checkTypeCreateOperand<T>(std::string const & value)
+// {
+//   std::stringstream ss, ss1(value->toString());
+//   long double       nb;
+//
+//   ss1 >> nb;
+//   if (std::numeric_limits<T>::lowest() >= value || std::numeric_limits<T>::max() <= value)
+//     return 1;
+//   return 0;//error format
+// }
+
 
 // tableau pointeur sur fonction
   IOperand const * Factory::createOperand( eOperandType type, std::string const & value ) const{
@@ -41,13 +53,18 @@
   IOperand const * Factory::createInt8( std::string const & value ) const
   {
     //fucntion check
+    // if (checkTypeCreateOperand<char>(value))
+    //   return (new Operand<char>(Int8, value));
+    // else
+    //   std::cout << "error taille int 8" <<std::endl;
+    // return 0;
     return (new Operand<char>(Int8, value));
   }
 
   IOperand const * Factory::createInt16( std::string const & value ) const
   {
     //fucntion check
-    return (new Operand<short>(Int16, value));
+    return (new Operand<short int>(Int16, value));
   }
 
   IOperand const * Factory::createInt32( std::string const & value ) const
