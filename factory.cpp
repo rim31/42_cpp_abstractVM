@@ -58,9 +58,6 @@ template<typename T>
 
   IOperand const * Factory::createInt8( std::string const & value ) const
   {
-    //fucntion check
-    std::cout << "Factory createInt8 => " << std::to_string(checkTypeCreateOperand<char>(value)) <<std::endl;
-
     if (!checkTypeCreateOperand<char>(value))
       exit(0);
     return (new Operand<char>(Int8, value));
@@ -68,9 +65,6 @@ template<typename T>
 
   IOperand const * Factory::createInt16( std::string const & value ) const
   {
-    //fucntion check
-    std::cout << "Factory createInt16 => " << std::to_string(checkTypeCreateOperand<short int>(value)) <<std::endl;
-
     if (!checkTypeCreateOperand<short int>(value))
       exit(0);
     return (new Operand<short int>(Int16, value));
@@ -78,9 +72,6 @@ template<typename T>
 
   IOperand const * Factory::createInt32( std::string const & value ) const
   {
-    //fucntion check
-    std::cout << "Factory createInt32 => " << std::to_string(checkTypeCreateOperand<signed int>(value)) <<std::endl;
-
     if (!checkTypeCreateOperand<signed int>(value))
       exit(0);
     return (new Operand<signed int>(Int32, value));
@@ -88,9 +79,6 @@ template<typename T>
 
   IOperand const * Factory::createFloat( std::string const & value ) const
   {
-    //fucntion check
-    std::cout << "Factory float => " << std::to_string(checkTypeCreateOperand<float>(value)) <<std::endl;
-
     if (!checkTypeCreateOperand<float>(value))
       exit(0);
     return (new Operand<float>(Float, value));
@@ -98,9 +86,6 @@ template<typename T>
 
   IOperand const * Factory::createDouble( std::string const & value ) const
   {
-    //fucntion check
-    std::cout << "Factory double => " << std::to_string(checkTypeCreateOperand<double>(value)) <<std::endl;
-
     if (!checkTypeCreateOperand<double>(value))
       exit(0);
     return (new Operand<double>(Double, value));
