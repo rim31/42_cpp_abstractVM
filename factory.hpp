@@ -24,7 +24,8 @@ class Factory
 
   IOperand const *(Factory::*create[5])(std::string const &) const;//// tableau pointeur sur fonction
 
-  // int checkTypeCreateOperand<T>(std::string const & value);
+  template<typename T>
+  bool checkTypeCreateOperand(std::string const & value) const;
 
 };
 

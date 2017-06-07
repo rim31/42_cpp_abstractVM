@@ -13,7 +13,7 @@
 
 GC = clang++
 
-FLAG = -Wall -Wextra -Werror
+FLAG = -Wall -Wextra -Werror -Wno-c++11-extensions
 
 SRCS = main.cpp factory.cpp
 
