@@ -6,6 +6,20 @@
 #include <cstring>
 #include <regex>
 
+// push int8(
+// push int16(
+// push int32(
+// push float(
+// push double(
+// pop
+// dump
+// assert VALUE
+// add
+// sub
+// mul
+// div
+// mod
+// print
 
 void parse_cmd(std::string buff, std::list<IOperand const *> mylist)
 {
@@ -45,21 +59,6 @@ void parse_cmd(std::string buff, std::list<IOperand const *> mylist)
   else if (buff.compare("exit") == 0)
     std::cout << "you enter exit" << std::endl;
   mylist.push_front (fact.createOperand(Int32,buff));
-    // push int8(
-    // push int16(
-    // push int32(
-    // push float(
-    // push double(
-    // pop
-    // dump
-    // assert VALUE
-    // add
-    // sub
-    // mul
-    // div
-    // mod
-    // print
-
 }
 
 
@@ -80,7 +79,7 @@ int checknumber(std::string nb, int point, int pos)
   int ret = 0;
   int nombredepoint = 0;
   int i = 0;
-  std::cout << "'"<< nb << "'" << std::endl;
+  // std::cout << "'"<< nb << "'" << std::endl;
   while(nb[i] && i < pos)
   {
     if (nombredepoint > point)
@@ -92,10 +91,9 @@ int checknumber(std::string nb, int point, int pos)
       nombredepoint++;
     else if (!isdigit(nb[i]) && nb[0] != '-')
     {
-      std::cout << " pas numerique";
+      std::cout << " pas numerique" << std::endl;
       return 0;
     }
-    std::cout << nb[i];
     i++;
   }
   if (nombredepoint != point)
@@ -105,7 +103,7 @@ int checknumber(std::string nb, int point, int pos)
   }
   else
   {
-    std::cout << std::endl << "if faut mettre dans la list" << std::endl;
+    // std::cout << std::endl << "if faut mettre dans la list" << std::endl;
     return 1;
   }
   return 0;
@@ -123,41 +121,59 @@ std::list<IOperand const *> checktype(std::string buff, std::list<IOperand const
   pos = findclose(buff);
   if (pos > 5 && pos != std::string::npos)
   {
-      // std::cout << "position de ) -> "<< pos << std::endl;
-    if (buff.substr(0,5).compare("int8(") == 0)
-    {
-      std::cout << "you enter int8(" << std::endl;
-      if (checknumber(buff.substr(5,pos-5), 0, pos-5)/*PENSER A VERIFIER LA TAILLE DU INT*/)
-        mylist.push_front (fact.createOperand(Int8,buff.substr(5,pos-5)));
-
-//http://en.cppreference.com/w/cpp/types/numeric_limits
-
-    }
-    else if (buff.substr(0,6).compare("int16(") == 0)
-    {
-      std::cout << "you enter int16( " << std::endl;
-      if (checknumber(buff.substr(6,pos-6), 0, pos-6)/*PENSER A VERIFIER LA TAILLE DU INT*/)
+      // on recupere le debut int8( puis on verifie ce qu'il ya entre les ()
+    if (buff.substr(0,5).compare("int8(") == 0 && checknumber(buff.substr(5,pos-5), 0, pos-5)/*PENSER A VERIFIER LA TAILLE DU INT*/)
+        mylist.push_front (fact.createOperand(Int8,buff.substr(5,pos-5)));//on met dan la pile si . et digit OK
+    else if (buff.substr(0,6).compare("int16(") == 0 && checknumber(buff.substr(6,pos-6), 0, pos-6)/*PENSER A VERIFIER LA TAILLE DU INT*/)
         mylist.push_front (fact.createOperand(Int16,buff.substr(6,pos-6)));
-    }
-    else if (buff.substr(0,6).compare("int32(") == 0)
-    {
-      std::cout << "you enter int32( " << std::endl;
-      if (checknumber(buff.substr(6,pos-6), 0, pos-6)/*PENSER A VERIFIER LA TAILLE DU INT*/)
+    else if (buff.substr(0,6).compare("int32(") == 0 && checknumber(buff.substr(6,pos-6), 0, pos-6)/*PENSER A VERIFIER LA TAILLE DU INT*/)
       mylist.push_front (fact.createOperand(Int32,buff.substr(6,pos-6)));
-
-    }
-    else if (buff.substr(0,6).compare("float(") == 0)
-    {
-      std::cout << "you enter float( " << std::endl;
-      if (checknumber(buff.substr(6,pos-6), 1, pos-6)/*PENSER A VERIFIER LA TAILLE DU INT*/)
+    else if (buff.substr(0,6).compare("float(") == 0 && checknumber(buff.substr(6,pos-6), 1, pos-6)/*PENSER A VERIFIER LA TAILLE DU INT*/)
         mylist.push_front (fact.createOperand(Float,buff.substr(6,pos-6)));
-    }
-    else if (buff.substr(0,7).compare("double(") == 0)
-    {
-      std::cout << "you enter double( " << std::endl;
-      if (checknumber(buff.substr(7,pos-7), 1, pos-7)/*PENSER A VERIFIER LA TAILLE DU INT*/)
+    else if (buff.substr(0,7).compare("double(") == 0 && checknumber(buff.substr(7,pos-7), 1, pos-7)/*PENSER A VERIFIER LA TAILLE DU INT*/)
         mylist.push_front (fact.createOperand(Double,buff.substr(7,pos-7)));
+  }
+  else
+    std::cout << " ) : RE pas trouve ERROR" << std::endl;
+  return mylist;
+}
+
+
+//===============on cherche le bon chiffre dans la liste pour ASSERT =================
+void searchAssert(std::string nb, std::list<IOperand const *> mylist)
+{
+  for (std::list<IOperand const *>::iterator it=mylist.begin(); it != mylist.end(); ++it)
+  {  // std::cout << ' ' << (*it)->toString();
+    if ( (*it)->toString().compare(nb) == 0)
+    {
+      std::cout << ' ' << (*it)->toString() << std::endl;
+      return;
     }
+  }
+}
+
+//===============fonction ASSERT, on verifie lsliste chaine ==================
+std::list<IOperand const *> checktypeAssert(std::string buff, std::list<IOperand const *> mylist)
+{
+  std::size_t pos;
+  std::size_t init;
+  std::string str;
+  Factory fact;
+
+  pos = findclose(buff);
+  if (pos > 5 && pos != std::string::npos)
+  {
+      // on recupere le debut int8( puis on verifie ce qu'il ya entre les ()
+    if (buff.substr(0,5).compare("int8(") == 0 && checknumber(buff.substr(5,pos-5), 0, pos-5)/*PENSER A VERIFIER LA TAILLE DU INT*/)
+        searchAssert(buff.substr(5,pos-5), mylist);//on met dan la pile si . et digit OK
+    else if (buff.substr(0,6).compare("int16(") == 0 && checknumber(buff.substr(6,pos-6), 0, pos-6)/*PENSER A VERIFIER LA TAILLE DU INT*/)
+        searchAssert(buff.substr(6,pos-6), mylist);
+    else if (buff.substr(0,6).compare("int32(") == 0 && checknumber(buff.substr(6,pos-6), 0, pos-6)/*PENSER A VERIFIER LA TAILLE DU INT*/)
+        searchAssert(buff.substr(6,pos-6), mylist);
+    else if (buff.substr(0,6).compare("float(") == 0 && checknumber(buff.substr(6,pos-6), 1, pos-6)/*PENSER A VERIFIER LA TAILLE DU INT*/)
+        searchAssert(buff.substr(6,pos-6), mylist);
+    else if (buff.substr(0,7).compare("double(") == 0 && checknumber(buff.substr(7,pos-7), 1, pos-7)/*PENSER A VERIFIER LA TAILLE DU INT*/)
+    searchAssert(buff.substr(7,pos-7), mylist);
   }
   else
     std::cout << " ) : RE pas trouve ERROR" << std::endl;
@@ -165,6 +181,7 @@ std::list<IOperand const *> checktype(std::string buff, std::list<IOperand const
   return mylist;
   // mylist.push_front (fact.createOperand(Int32,buff));
 }
+
 
 int checknumberargument(const std::string s)
 {
@@ -190,7 +207,7 @@ int checknumberargument(const std::string s)
      if (sub.compare("") != 0)
       i++;
    }
-  std::cout <<"error : "<< error << " et i : " << i << std::endl;
+  // std::cout <<"error : "<< error << " et i : " << i << std::endl;
   return error;
 }
 
@@ -221,16 +238,20 @@ std::list<IOperand const *> my_split(const std::string str, std::list<IOperand c
         else if (sub.compare("") != 0)
           std::cout << "Error trop de parametres et pas commentaire" << sub << std::endl;
       }
-      if ((sub.compare("push") == 0 && i == 0 )|| (sub.compare("assert") == 0 && i == 0))
+      if ((sub.compare("push") == 0 && i == 0 ))
       {
         pushok = 1;
-        std::cout << "changer PUSH/ASSERT a faire " << sub << std::endl;
+        std::cout << "tu viens de PUSH" << sub << std::endl;
+      }
+      if (sub.compare("assert") == 0 && i == 0)
+      {
+        assertok = 1;
+        std::cout << "tu viens de ASSERT " << sub << std::endl;
       }
       if (i == 1 && pushok == 1)
-      {
         mylist = checktype(sub, mylist);
-        // std::cout << "checktype OK " << sub << std::endl;
-      }
+      if (i == 1 && assertok == 1)
+        mylist = checktypeAssert(sub, mylist);
       i++;
     }
   }
@@ -247,20 +268,17 @@ void parser(std::string str)
   std::list<IOperand const *> mylist;
 
   mylist = my_split(str, mylist);
-  std::cout << "argv[0] : " << str << std::endl;
+  // std::cout << "argv[0] : " << str << std::endl;
 
   if (!std::getline(std::cin, buff))
     exit(0);
     mylist = my_split(buff, mylist);
-  // mylist.push_front (fact.createOperand(Int32,buff));
   while(buff.compare(";;") != 0)
   {
     if (!std::getline(std::cin, buff))
       exit(0);//passer a la ligne suivante plutot
     else
-      {
-        mylist = my_split(buff, mylist);
-      }
+      mylist = my_split(buff, mylist);
   }
 
 
