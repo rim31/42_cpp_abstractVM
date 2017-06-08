@@ -6,13 +6,13 @@
 #include <cstring>
 #include <regex>
 
-void bonus(std::list<IOperand const *> mylist)
+void dump(std::list<IOperand const *> mylist)
 {
   for (std::list<IOperand const *>::iterator it=mylist.begin(); it != mylist.end(); ++it)
-      std::cout << ' ' << (*it)->toString() << std::endl;
+      std::cout << ' ' << (*it)->toString()<< std::endl;;
 }
 
-
+//===================== +++++++++++++ ===============
 std::list<IOperand const *> cmd_add(std::list<IOperand const *> mylist)
 {
   if (mylist.size() >= 2)
@@ -22,28 +22,122 @@ std::list<IOperand const *> cmd_add(std::list<IOperand const *> mylist)
     mylist.pop_front();
     mylist.pop_front();
     IOperand const *nb = *nb1 + *nb2;
-    mylist.push_front(nb);    // std::cout << nb->toString() << std::endl;
+    mylist.push_front(nb);    // std::cout << nb->toString();
   }
   else
-    std::cout << "\033[1;31m - erreur - pas assez de nombre dans la pile - \033[0m\n" << std::endl;
+    std::cout << "\033[1;31m - erreur - pas assez de nombre dans la pile - \033[0m\n";
+  return mylist;
+}
 
-  // for (std::list<IOperand const *>::iterator it=mylist.begin(); it != mylist.end(); ++it)
-  // {
-  //   //std::cout << ' ' << (*it)->toString() << std::endl;
-  //   i++;
-  //   if (i == 1)
-  //   nb1 = (*it)->toString();
-  //   if (i == 2)
-  //   nb2 = (*it)->toString();
-  // }
-  // if (i >1)
-  // {
-  //   nb = std::to_string(std::stoi(nb1) + std::stoi(nb2));
-  //   // IOperand const *k = nb1 +  nb2;
-  //   // std::cout << k->toString() << std::endl;
-  //   std::cout << nb << std::endl;
-  // }
-  // else
-  //   std::cout << "erreur - pas assez de nombre dans la pile" << std::endl;
+//===================== ---------------- ===============
+std::list<IOperand const *> cmd_sub(std::list<IOperand const *> mylist)
+{
+  if (mylist.size() >= 2)
+  {
+    IOperand const *nb1 = mylist.front();
+    IOperand const *nb2 = *std::next(mylist.begin());
+    mylist.pop_front();
+    mylist.pop_front();
+    IOperand const *nb = *nb2 - *nb1;
+    mylist.push_front(nb);    // std::cout << nb->toString();
+  }
+  else
+    std::cout << "\033[1;31m - erreur - pas assez de nombre dans la pile - \033[0m\n";
+  return mylist;
+}
+
+//===================== ****************** ===============
+std::list<IOperand const *> cmd_mul(std::list<IOperand const *> mylist)
+{
+  if (mylist.size() >= 2)
+  {
+    IOperand const *nb1 = mylist.front();
+    IOperand const *nb2 = *std::next(mylist.begin());
+    mylist.pop_front();
+    mylist.pop_front();
+    IOperand const *nb = *nb1 * *nb2;
+    mylist.push_front(nb);    // std::cout << nb->toString();
+  }
+  else
+    std::cout << "\033[1;31m - erreur - pas assez de nombre dans la pile - \033[0m\n";
+  return mylist;
+}
+
+
+//===================== ///////////////////// ===============
+std::list<IOperand const *> cmd_div(std::list<IOperand const *> mylist)
+{
+  if (mylist.size() >= 2)
+  {
+    IOperand const *nb1 = mylist.front();
+    IOperand const *nb2 = *std::next(mylist.begin());
+    // std::cout << nb2->toString();;;
+    if (std::stoi(nb2->toString()) == 0)
+    {
+      std::cout << "\033[1;31m - erreur - division par 0 - y a pas ecrit qui divise qui :-P - \033[0m\n";
+      return mylist;
+    }
+    mylist.pop_front();
+    mylist.pop_front();
+    IOperand const *nb = *nb2 / *nb1;
+    mylist.push_front(nb);    // std::cout << nb->toString();
+  }
+  else
+    std::cout << "\033[1;31m - erreur - pas assez de nombre dans la pile - \033[0m\n";
+  return mylist;
+}
+
+//===================== %%%%%%%%%%%%%%%%%%%%%%%% ===============
+std::list<IOperand const *> cmd_mod(std::list<IOperand const *> mylist)
+{
+  if (mylist.size() >= 2)
+  {
+    IOperand const *nb1 = mylist.front();
+    IOperand const *nb2 = *std::next(mylist.begin());
+    // std::cout << nb2->toString();;;
+    if (std::stoi(nb2->toString()) == 0)
+    {
+      std::cout << "\033[1;31m - erreur - division par 0 - y a pas ecrit qui divise qui :-P - \033[0m\n";
+      return mylist;
+    }
+    mylist.pop_front();
+    mylist.pop_front();
+    IOperand const *nb = *nb2 % *nb1;
+    mylist.push_front(nb);    // std::cout << nb->toString();
+  }
+  else
+    std::cout << "\033[1;31m - erreur - pas assez de nombre dans la pile - \033[0m\n";
+  return mylist;
+}
+
+//===================== %print% ===============
+std::list<IOperand const *> cmd_print(std::list<IOperand const *> mylist)
+{
+  if (mylist.size() >= 1)
+  {
+    IOperand const *nb1 = mylist.front();
+    if (std::stoi(nb1->toString()) >= 0 && std::stoi(nb1->toString()) <= 128 )
+    {
+      char val = std::stoi(nb1->toString());
+      std::cout << val << std::endl;
+    }
+  }
+  else
+    std::cout << "\033[1;31m - erreur - pas assez de nombre dans la pile - \033[0m\n";
+  return mylist;
+}
+
+
+//===================== +++++++++++++ ===============
+std::list<IOperand const *> cmd_pop(std::list<IOperand const *> mylist)
+{
+  if (mylist.size() >= 1)
+  {
+    IOperand const *nb1 = mylist.front();
+    mylist.pop_front();
+  // std::cout << nb1->toString();
+  }
+  else
+    std::cout << "\033[1;31m - erreur - pas assez de nombre dans la pile - \033[0m\n";
   return mylist;
 }

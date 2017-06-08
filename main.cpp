@@ -181,6 +181,22 @@ std::list<IOperand const *> checktypeAssert(std::string buff, std::list<IOperand
   // mylist.push_front (fact.createOperand(Int32,buff));
 }
 
+int numberargument(const std::string s)
+{
+  std::istringstream iss(s);
+  int i = 0;
+  Factory fact;
+  //1ere verification nombre d'argument
+  while (iss)
+  {
+     std::string sub;
+     iss >> sub;
+     if (sub.compare("") != 0)
+      i++;
+   }
+  return i;
+}
+
 
 int checknumberargument(const std::string s)
 {
@@ -210,6 +226,32 @@ int checknumberargument(const std::string s)
 }
 
 
+//==================  CMD en entree ==================
+std::list<IOperand const*> input_cmd(std::string str, std::list<IOperand const *> mylist)
+{
+  if (str.compare("dump") == 0)
+    dump(mylist);
+  else if (str.compare("add") == 0)
+    mylist = cmd_add(mylist);
+  else if (str.compare("sub") == 0)
+    mylist = cmd_sub(mylist);
+  else if (str.compare("mul") == 0)
+    mylist = cmd_sub(mylist);
+  else if (str.compare("div") == 0)
+    mylist = cmd_div(mylist);
+  else if (str.compare("mod") == 0)
+    mylist = cmd_mod(mylist);
+  else if (str.compare("print") == 0)
+    mylist = cmd_print(mylist);
+  else if (str.compare("pop") == 0)
+    mylist = cmd_pop(mylist);
+  else if (str.compare("assert") == 0)
+    std::cout << "\033[1;31m rajoute un type(nombre) apres assert\033[0m ";
+  else
+    std::cout << "\033[1;31m - ??? - \033[0m " << str << std::endl;
+  return mylist;
+}
+
 //=========================== parser SPLIT ========================
 std::list<IOperand const *> my_split(const std::string str, std::list<IOperand const *> mylist)
 {
@@ -231,24 +273,22 @@ std::list<IOperand const *> my_split(const std::string str, std::list<IOperand c
       if (i > 1)
       {
         if (sub.substr(0,1).compare(";") == 0)
-          std::cout << "\033[1;31m - commentaire present - \033[0m\n" << sub << std::endl;
+          std::cout << "\033[1;31m - commentaire present - \033[0m : " << sub << std::endl;
         else if (sub.compare("") != 0)
-          std::cout << "\033[1;31m - Error trop de parametres et pas commentaire - \033[0m\n" << sub << std::endl;
+          std::cout << "\033[1;31m - Error trop de parametres et pas commentaire - \033[0m : " << sub << std::endl;
       }
       if ((sub.compare("push") == 0 && i == 0 ))
-      {
+      // {
         pushok = 1;
-        std::cout << "tu viens de PUSH" << sub << std::endl;
-      }
+        // std::cout << "tu viens de PUSH " << sub << std::endl;
+      // }
       if (sub.compare("assert") == 0 && i == 0)
-      {
+      // {
         assertok = 1;
-        std::cout << "tu viens de ASSERT " << sub << std::endl;
-      }
-      if (sub.compare("dump") == 0 && i == 0)
-        bonus(mylist);
-      if (sub.compare("add") == 0 && i == 0)
-        mylist = cmd_add(mylist);
+        // std::cout << "tu viens de ASSERT " << sub << std::endl;
+      // }
+      if (sub.compare("") != 0 && i == 0 && numberargument(str) == 1)
+        mylist = input_cmd(sub, mylist);
       if (i == 1 && pushok == 1)
         mylist = checktype(sub, mylist);
       if (i == 1 && assertok == 1)
@@ -284,7 +324,7 @@ void parser(std::string str)
 
 
   std::cout << "mylist contains :" << std::endl;
-  bonus(mylist);
+  dump(mylist);
   // for (auto it : mylist)
   //   std::cout << ' ' << (*it).toString();
   // for (std::list<IOperand const *>::iterator it=mylist.begin(); it != mylist.end(); ++it)
@@ -295,7 +335,7 @@ void parser(std::string str)
 
 
 // //=====================OPERATION=========================
-// 
+//
 //
 //   IOperand const *i = new Operand<int>(Int32, "42");
 //   // IOperand const *i = new Operand<double>(Double, "12.123456");
