@@ -7,61 +7,6 @@
 #include <cstring>
 #include <regex>
 
-// push int8(
-// push int16(
-// push int32(
-// push float(
-// push double(
-// pop
-// dump
-// assert VALUE
-// add
-// sub
-// mul
-// div
-// mod
-// print
-
-void lexer_cmd(std::string buff, std::list<IOperand const *> mylist)
-{
-  Factory fact;
-  if (buff.compare("push") == 0)
-    std::cout << "you enter push " << std::endl;
-  else if (buff.compare("push int8(") == 0)
-    std::cout << "you enter push int8( " << std::endl;
-  else if (buff.compare("push int16(") == 0)
-    std::cout << "you enter push int16( " << std::endl;
-  else if (buff.compare("push int32(") == 0)
-    std::cout << "you enter push int32( " << std::endl;
-  else if (buff.compare("push float(") == 0)
-    std::cout << "you enter push float( " << std::endl;
-  else if (buff.compare("push double(") == 0)
-    std::cout << "you enter push double( " << std::endl;
-  else if (buff.compare("add") == 0)
-    std::cout << "you enter Add" << std::endl;
-  else if (buff.compare("pop") == 0)
-    std::cout << "you enter pop" << std::endl;
-  else if (buff.compare("dump") == 0)
-    std::cout << "you enter dump" << std::endl;
-  else if (buff.compare("assert") == 0)
-    std::cout << "you enter assert VALUE" << std::endl;
-  else if (buff.compare("add") == 0)
-    std::cout << "you enter add" << std::endl;
-  else if (buff.compare("sub") == 0)
-    std::cout << "you enter sub" << std::endl;
-  else if (buff.compare("mul") == 0)
-    std::cout << "you enter mul" << std::endl;
-  else if (buff.compare("div") == 0)
-    std::cout << "you enter div" << std::endl;
-  else if (buff.compare("mod") == 0)
-    std::cout << "you enter mod" << std::endl;
-  else if (buff.compare("print") == 0)
-    std::cout << "you enter print" << std::endl;
-  else if (buff.compare("exit") == 0)
-    std::cout << "you enter exit" << std::endl;
-  mylist.push_front (fact.createOperand(Int32,buff));
-}
-
 
 //================ fonction pour trouver ) final===============
 size_t findclose(std::string str)
@@ -73,7 +18,6 @@ size_t findclose(std::string str)
   else
     return std::string::npos;
 }
-
 
 
 //=============== on regarde si on a bien un nombre +/- et . ==================
@@ -105,7 +49,11 @@ int checknumber(std::string nb, int point, int pos)
     return 0;
   }
   else
-    return 1;    // std::cout << std::endl << "if faut mettre dans la list" << std::endl;
+  {
+    if (nombredepoint == 1 && point == 1 && nb.find(".") >= 1 && nb.find(".") <= pos - 1) // on verifie le nombre "[0-9].[0.9]"
+      return 1;    // std::cout << std::endl << "if faut mettre dans la list" << std::endl;
+  }
+  std::cout << std::endl << "pas le bon nombre de [0-9].[0-9]" << std::endl;
   return 0;
 }
 
@@ -181,12 +129,12 @@ std::list<IOperand const *> checktypeAssert(std::string buff, std::list<IOperand
   // mylist.push_front (fact.createOperand(Int32,buff));
 }
 
+//===================1ere verification nombre d'argument===============
 int numberargument(const std::string s)
 {
   std::istringstream iss(s);
   int i = 0;
   Factory fact;
-  //1ere verification nombre d'argument
   while (iss)
   {
      std::string sub;
@@ -221,8 +169,8 @@ int checknumberargument(const std::string s)
      }
      if (sub.compare("") != 0)
       i++;
-   }  // std::cout <<"error : "<< error << " et i : " << i << std::endl;
-  return error;
+   }
+  return error;  // std::cout <<"error : "<< error << " et i : " << i << std::endl;
 }
 
 
@@ -247,7 +195,7 @@ std::list<IOperand const*> input_cmd(std::string str, std::list<IOperand const *
     mylist = cmd_pop(mylist);
   else if (str.compare("assert") == 0)
     std::cout << "\033[1;31m rajoute un type(nombre) apres assert\033[0m ";
-  else
+  else if (str.compare("exit") != 0)
     std::cout << "\033[1;31m - ??? - \033[0m " << str << std::endl;
   return mylist;
 }
@@ -278,15 +226,9 @@ std::list<IOperand const *> my_split(const std::string str, std::list<IOperand c
           std::cout << "\033[1;31m - Error trop de parametres et pas commentaire - \033[0m : " << sub << std::endl;
       }
       if ((sub.compare("push") == 0 && i == 0 ))
-      // {
         pushok = 1;
-        // std::cout << "tu viens de PUSH " << sub << std::endl;
-      // }
       if (sub.compare("assert") == 0 && i == 0)
-      // {
         assertok = 1;
-        // std::cout << "tu viens de ASSERT " << sub << std::endl;
-      // }
       if (sub.compare("") != 0 && i == 0 && numberargument(str) == 1)
         mylist = input_cmd(sub, mylist);
       if (i == 1 && pushok == 1)
@@ -306,10 +248,13 @@ void parser(std::string str)
   std::string   buff;
   std::string myints[] = {""};
   std::list<IOperand const *> mylist;
+  int exitok = 0;
 
   mylist = my_split(str, mylist);//premiere ligne
   if (!std::getline(std::cin, buff))
     exit(0);
+  if (buff.compare("exit") == 0)
+    exitok++;
     mylist = my_split(buff, mylist);
   while(buff.compare(";;") != 0)
   {
@@ -317,62 +262,21 @@ void parser(std::string str)
       exit(0);//passer a la ligne suivante plutot
     else
       mylist = my_split(buff, mylist);
+    if (buff.compare("exit") == 0)
+      exitok++;
   }
+  if (exitok == 0)
+    std::cout << "\033[1;31m - error - il manque un exit - \033[0m : " << std::endl;
 
 
 
-
+//====================================================================
+//===================      A SUPPRIMER     ===========================
+//====================================================================
 
   std::cout << "mylist contains :" << std::endl;
   dump(mylist);
-  // for (auto it : mylist)
-  //   std::cout << ' ' << (*it).toString();
-  // for (std::list<IOperand const *>::iterator it=mylist.begin(); it != mylist.end(); ++it)
-  //   std::cout << ' ' << (*it)->toString();
-
   std::cout << '\n';
-
-
-
-// //=====================OPERATION=========================
-//
-//
-//   IOperand const *i = new Operand<int>(Int32, "42");
-//   // IOperand const *i = new Operand<double>(Double, "12.123456");
-//   IOperand const *j = new Operand<float>(Float, "21.1234567");
-//   IOperand const *k = *i + *j;
-//
-//   std::cout << k->toString() << std::endl;
-//
-//   std::cout << "=================== operator - ==================" << std::endl;
-//   i = new Operand<int>(Int32, "42");
-//   // i = new Operand<double>(Double, "42.123456");
-//   j = new Operand<float>(Float, "21.1234567");
-//   k = *i - *j;
-//   std::cout << k->toString() << std::endl;
-//
-//   std::cout << "=================== operator * ==================" << std::endl;
-//   i = new Operand<int>(Int32, "42");
-//   // i = new Operand<double>(Double, "42.123456");
-//   j = new Operand<float>(Float, "21.1234567");
-//   k = *i * *j;
-//   std::cout << k->toString() << std::endl;
-//
-//   std::cout << "=================== operator / ==================" << std::endl;
-//   i = new Operand<int>(Int32, "42");
-//   // i = new Operand<double>(Double, "42.123456");
-//   j = new Operand<float>(Float, "21.1234567");
-//   k = *i / *j;
-//   std::cout << k->toString() << std::endl;
-//
-//   std::cout << "=================== operator % ==================" << std::endl;
-//   // i = new Operand<double>(Double, "42.123456");
-//   // j = new Operand<float>(Float, "21.1234567");
-//   i = new Operand<int>(Int32, "12");
-//   j = new Operand<int>(Int32, "42");
-//   // j = new Operand<int>(Int32, "0");
-//   k = *i % *j;
-//   std::cout << k->toString() << std::endl;
 }
 
 int main(int ac, char **av)

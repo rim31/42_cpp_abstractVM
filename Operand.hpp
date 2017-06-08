@@ -203,7 +203,7 @@ IOperand const * Operand<T>::operator/( IOperand const & rhs ) const
   ss2 >> j;
   if (j == 0)
   {
-    std::cout << " error :division ar 0 " << std::endl;
+    std::cout << " error :division par 0 (check du IOperand)  y a  encore un autre check apre :-P" << std::endl;
     exit(0);
   }
   //====== operation ======
@@ -236,7 +236,7 @@ IOperand const * Operand<T>::operator%( IOperand const & rhs ) const
   ss2 >> j;
   if (j == 0)
   {
-    std::cout << " error : % 0, les nombres doivent etre des int " << std::endl;
+    std::cout << " error : % 0, les nombres doivent etre des int IOperand" << std::endl;
     exit(0);
   }
   //====== operation ======

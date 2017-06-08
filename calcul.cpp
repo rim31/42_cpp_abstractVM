@@ -97,7 +97,7 @@ std::list<IOperand const *> cmd_mod(std::list<IOperand const *> mylist)
     // std::cout << nb2->toString();;;
     if (std::stoi(nb2->toString()) == 0)
     {
-      std::cout << "\033[1;31m - erreur - division par 0 - y a pas ecrit qui divise qui :-P - \033[0m\n";
+      std::cout << "\033[1;31m - erreur - modulo par 0 - y a pas ecrit qui modulo qui :-P - \033[0m\n";
       return mylist;
     }
     mylist.pop_front();
