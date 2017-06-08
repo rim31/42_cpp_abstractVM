@@ -40,7 +40,6 @@ template<typename T>
   // std::cout << nb <<std::endl;
   // std::cout << std::to_string(std::numeric_limits<T>::lowest()) <<std::endl;
   // std::cout << std::to_string(std::numeric_limits<T>::max()) <<std::endl;
-
   if (nb >= std::numeric_limits<T>::lowest() && nb <= std::numeric_limits<T>::max())
     return true;
   std::cout << "error taille" <<std::endl;

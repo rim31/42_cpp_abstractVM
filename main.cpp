@@ -1,4 +1,5 @@
 #include "Operand.hpp"
+#include "calcul.hpp"
 #include <list>
 #include <string>
 #include <sstream>
@@ -21,7 +22,7 @@
 // mod
 // print
 
-void parse_cmd(std::string buff, std::list<IOperand const *> mylist)
+void lexer_cmd(std::string buff, std::list<IOperand const *> mylist)
 {
   Factory fact;
   if (buff.compare("push") == 0)
@@ -73,6 +74,8 @@ size_t findclose(std::string str)
     return std::string::npos;
 }
 
+
+
 //=============== on regarde si on a bien un nombre +/- et . ==================
 int checknumber(std::string nb, int point, int pos)
 {
@@ -102,10 +105,7 @@ int checknumber(std::string nb, int point, int pos)
     return 0;
   }
   else
-  {
-    // std::cout << std::endl << "if faut mettre dans la list" << std::endl;
-    return 1;
-  }
+    return 1;    // std::cout << std::endl << "if faut mettre dans la list" << std::endl;
   return 0;
 }
 
@@ -134,7 +134,7 @@ std::list<IOperand const *> checktype(std::string buff, std::list<IOperand const
         mylist.push_front (fact.createOperand(Double,buff.substr(7,pos-7)));
   }
   else
-    std::cout << " ) : RE pas trouve ERROR" << std::endl;
+    std::cout << " ) : pas trouve ERROR" << std::endl;
   return mylist;
 }
 
@@ -152,6 +152,7 @@ void searchAssert(std::string nb, std::list<IOperand const *> mylist)
   }
 }
 
+
 //===============fonction ASSERT, on verifie lsliste chaine ==================
 std::list<IOperand const *> checktypeAssert(std::string buff, std::list<IOperand const *> mylist)
 {
@@ -162,8 +163,7 @@ std::list<IOperand const *> checktypeAssert(std::string buff, std::list<IOperand
 
   pos = findclose(buff);
   if (pos > 5 && pos != std::string::npos)
-  {
-      // on recupere le debut int8( puis on verifie ce qu'il ya entre les ()
+  {      // on recupere le debut int8( puis on verifie ce qu'il ya entre les ()
     if (buff.substr(0,5).compare("int8(") == 0 && checknumber(buff.substr(5,pos-5), 0, pos-5)/*PENSER A VERIFIER LA TAILLE DU INT*/)
         searchAssert(buff.substr(5,pos-5), mylist);//on met dan la pile si . et digit OK
     else if (buff.substr(0,6).compare("int16(") == 0 && checknumber(buff.substr(6,pos-6), 0, pos-6)/*PENSER A VERIFIER LA TAILLE DU INT*/)
@@ -177,7 +177,6 @@ std::list<IOperand const *> checktypeAssert(std::string buff, std::list<IOperand
   }
   else
     std::cout << " ) : RE pas trouve ERROR" << std::endl;
-
   return mylist;
   // mylist.push_front (fact.createOperand(Int32,buff));
 }
@@ -197,46 +196,44 @@ int checknumberargument(const std::string s)
      if (i==3)
      {
        if (sub.substr(0,1).compare(";") == 0)
-        std::cout << "commentaire avec ; " << sub << std::endl;
+        std::cout << "\033[1;31m - ; commentaire - \033[0m\n" << sub << std::endl;
        else
         {
-          std::cout << "trop de parametres " << sub << std::endl;
+          std::cout << "\033[1;31m - trop de parametres - \033[0m\n" << sub << std::endl;
           error = 1;
         }
      }
      if (sub.compare("") != 0)
       i++;
-   }
-  // std::cout <<"error : "<< error << " et i : " << i << std::endl;
+   }  // std::cout <<"error : "<< error << " et i : " << i << std::endl;
   return error;
 }
 
+
+//=========================== parser SPLIT ========================
 std::list<IOperand const *> my_split(const std::string str, std::list<IOperand const *> mylist)
 {
-  //on cherche tout les ;
   std::string s = str;
-  if (str.find(";") != std::string::npos)
-      s = str.substr(0,str.find(";"));
-
-  std::istringstream iss(s);
   int i = 0;
   int pushok = 0;
   int assertok = 0;
   Factory fact;
 
+  if (str.find(";") != std::string::npos)   //on cherche tout les ;
+    s = str.substr(0,str.find(";"));
+  std::istringstream iss(s);
   if (!checknumberargument(s))
   {
    while (iss)
    {
       std::string sub;
       iss >> sub;
-
-      if (i>1)
+      if (i > 1)
       {
         if (sub.substr(0,1).compare(";") == 0)
-          std::cout << "commentaire avec ; " << sub << std::endl;
+          std::cout << "\033[1;31m - commentaire present - \033[0m\n" << sub << std::endl;
         else if (sub.compare("") != 0)
-          std::cout << "Error trop de parametres et pas commentaire" << sub << std::endl;
+          std::cout << "\033[1;31m - Error trop de parametres et pas commentaire - \033[0m\n" << sub << std::endl;
       }
       if ((sub.compare("push") == 0 && i == 0 ))
       {
@@ -248,6 +245,10 @@ std::list<IOperand const *> my_split(const std::string str, std::list<IOperand c
         assertok = 1;
         std::cout << "tu viens de ASSERT " << sub << std::endl;
       }
+      if (sub.compare("dump") == 0 && i == 0)
+        bonus(mylist);
+      if (sub.compare("add") == 0 && i == 0)
+        mylist = cmd_add(mylist);
       if (i == 1 && pushok == 1)
         mylist = checktype(sub, mylist);
       if (i == 1 && assertok == 1)
@@ -258,8 +259,7 @@ std::list<IOperand const *> my_split(const std::string str, std::list<IOperand c
   return mylist;
 }
 
-  // push      int8(  )
-
+//===================  PARSER ========================
 void parser(std::string str)
 {
   Factory fact;
@@ -267,9 +267,7 @@ void parser(std::string str)
   std::string myints[] = {""};
   std::list<IOperand const *> mylist;
 
-  mylist = my_split(str, mylist);
-  // std::cout << "argv[0] : " << str << std::endl;
-
+  mylist = my_split(str, mylist);//premiere ligne
   if (!std::getline(std::cin, buff))
     exit(0);
     mylist = my_split(buff, mylist);
@@ -285,55 +283,56 @@ void parser(std::string str)
 
 
 
-  std::cout << "mylist contains:";
+  std::cout << "mylist contains :" << std::endl;
+  bonus(mylist);
   // for (auto it : mylist)
   //   std::cout << ' ' << (*it).toString();
-  for (std::list<IOperand const *>::iterator it=mylist.begin(); it != mylist.end(); ++it)
-    std::cout << ' ' << (*it)->toString();
+  // for (std::list<IOperand const *>::iterator it=mylist.begin(); it != mylist.end(); ++it)
+  //   std::cout << ' ' << (*it)->toString();
 
   std::cout << '\n';
 
 
 
-//=====================OPERATION=========================
-
-
-  IOperand const *i = new Operand<int>(Int32, "42");
-  // IOperand const *i = new Operand<double>(Double, "12.123456");
-  IOperand const *j = new Operand<float>(Float, "21.1234567");
-  IOperand const *k = *i + *j;
-
-  std::cout << k->toString() << std::endl;
-
-  std::cout << "=================== operator - ==================" << std::endl;
-  i = new Operand<int>(Int32, "42");
-  // i = new Operand<double>(Double, "42.123456");
-  j = new Operand<float>(Float, "21.1234567");
-  k = *i - *j;
-  std::cout << k->toString() << std::endl;
-
-  std::cout << "=================== operator * ==================" << std::endl;
-  i = new Operand<int>(Int32, "42");
-  // i = new Operand<double>(Double, "42.123456");
-  j = new Operand<float>(Float, "21.1234567");
-  k = *i * *j;
-  std::cout << k->toString() << std::endl;
-
-  std::cout << "=================== operator / ==================" << std::endl;
-  i = new Operand<int>(Int32, "42");
-  // i = new Operand<double>(Double, "42.123456");
-  j = new Operand<float>(Float, "21.1234567");
-  k = *i / *j;
-  std::cout << k->toString() << std::endl;
-
-  std::cout << "=================== operator % ==================" << std::endl;
-  // i = new Operand<double>(Double, "42.123456");
-  // j = new Operand<float>(Float, "21.1234567");
-  i = new Operand<int>(Int32, "12");
-  j = new Operand<int>(Int32, "42");
-  // j = new Operand<int>(Int32, "0");
-  k = *i % *j;
-  std::cout << k->toString() << std::endl;
+// //=====================OPERATION=========================
+// 
+//
+//   IOperand const *i = new Operand<int>(Int32, "42");
+//   // IOperand const *i = new Operand<double>(Double, "12.123456");
+//   IOperand const *j = new Operand<float>(Float, "21.1234567");
+//   IOperand const *k = *i + *j;
+//
+//   std::cout << k->toString() << std::endl;
+//
+//   std::cout << "=================== operator - ==================" << std::endl;
+//   i = new Operand<int>(Int32, "42");
+//   // i = new Operand<double>(Double, "42.123456");
+//   j = new Operand<float>(Float, "21.1234567");
+//   k = *i - *j;
+//   std::cout << k->toString() << std::endl;
+//
+//   std::cout << "=================== operator * ==================" << std::endl;
+//   i = new Operand<int>(Int32, "42");
+//   // i = new Operand<double>(Double, "42.123456");
+//   j = new Operand<float>(Float, "21.1234567");
+//   k = *i * *j;
+//   std::cout << k->toString() << std::endl;
+//
+//   std::cout << "=================== operator / ==================" << std::endl;
+//   i = new Operand<int>(Int32, "42");
+//   // i = new Operand<double>(Double, "42.123456");
+//   j = new Operand<float>(Float, "21.1234567");
+//   k = *i / *j;
+//   std::cout << k->toString() << std::endl;
+//
+//   std::cout << "=================== operator % ==================" << std::endl;
+//   // i = new Operand<double>(Double, "42.123456");
+//   // j = new Operand<float>(Float, "21.1234567");
+//   i = new Operand<int>(Int32, "12");
+//   j = new Operand<int>(Int32, "42");
+//   // j = new Operand<int>(Int32, "0");
+//   k = *i % *j;
+//   std::cout << k->toString() << std::endl;
 }
 
 int main(int ac, char **av)
