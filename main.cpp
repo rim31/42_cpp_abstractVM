@@ -1,5 +1,6 @@
 #include "Operand.hpp"
 #include "calcul.hpp"
+#include "Exception.hpp"
 #include <list>
 #include <string>
 #include <sstream>
@@ -335,6 +336,7 @@ void lecture_fichier(std::string file)
 
 int main(int ac, char **av)
 {
+  Except err;
   if (ac == 1)
     parser("");
   else if (ac == 2)
