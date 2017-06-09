@@ -17,7 +17,7 @@ class Except : public std::exception
 
     void setExcept( const char * msg );
 
-    // virtual const char * what() const throw();
+    virtual const char* what() const throw();
 
     const char * msg;
 };
@@ -49,20 +49,21 @@ class Except : public std::exception
     return *this;
   }
 
-
   void Except::setExcept( const char * msg )
   {
     std::ostringstream oss;
     oss << this->msg;
     std::cout << "ERROR -> " << oss.str() << std::endl;
     exit(0);
+    // this->msg = msg;
     return;
   }
 
-  // virtual const char * what() const throw()
-  // {
-  //   return this->msg.c_str();
-  // }
+  const char* Except::what() const throw()
+  {
+    return ("CLASS error");
+    // return this->msg.c_str();
+  }
 
 
 
