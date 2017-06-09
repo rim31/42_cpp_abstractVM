@@ -16,6 +16,8 @@ std::list<IOperand const *> cmd_div(std::list<IOperand const *> mylist);
 std::list<IOperand const *> cmd_mod(std::list<IOperand const *> mylist);
 std::list<IOperand const *> cmd_print(std::list<IOperand const *> mylist);
 std::list<IOperand const *> cmd_pop(std::list<IOperand const *> mylist);
+int check_cmd(std::string str);
+
 
 
 

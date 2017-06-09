@@ -81,6 +81,8 @@ std::list<IOperand const *> checktype(std::string buff, std::list<IOperand const
         mylist.push_front (fact.createOperand(Float,buff.substr(6,pos-6)));
     else if (buff.substr(0,7).compare("double(") == 0 && checknumber(buff.substr(7,pos-7), 1, pos-7)/*PENSER A VERIFIER LA TAILLE DU INT*/)
         mylist.push_front (fact.createOperand(Double,buff.substr(7,pos-7)));
+    else
+        std::cout << "\033[1;31m - Error commande - \033[0m : " << buff << std::endl;
   }
   else
     std::cout << " ) : pas trouve ERROR" << std::endl;
@@ -122,7 +124,9 @@ std::list<IOperand const *> checktypeAssert(std::string buff, std::list<IOperand
     else if (buff.substr(0,6).compare("float(") == 0 && checknumber(buff.substr(6,pos-6), 1, pos-6)/*PENSER A VERIFIER LA TAILLE DU INT*/)
         searchAssert(buff.substr(6,pos-6), mylist);
     else if (buff.substr(0,7).compare("double(") == 0 && checknumber(buff.substr(7,pos-7), 1, pos-7)/*PENSER A VERIFIER LA TAILLE DU INT*/)
-    searchAssert(buff.substr(7,pos-7), mylist);
+      searchAssert(buff.substr(7,pos-7), mylist);
+    else
+      std::cout << "\033[1;31m - Error commande - \033[0m : " << buff << std::endl;
   }
   else
     std::cout << " ) : RE pas trouve ERROR" << std::endl;
@@ -210,11 +214,13 @@ std::list<IOperand const *> my_split(const std::string str, std::list<IOperand c
   int i = 0;
   int pushok = 0;
   int assertok = 0;
+  int cmdok = 0;
   Factory fact;
 
   if (str.find(";") != std::string::npos)   //on cherche tout les ;
     s = str.substr(0,str.find(";"));
   std::istringstream iss(s);
+  // std::cout << "\033[1;31m debug |"<< s << "| \033[0m : "  << std::endl;
   if (!checknumberargument(s))
   {
    while (iss)
@@ -227,20 +233,35 @@ std::list<IOperand const *> my_split(const std::string str, std::list<IOperand c
           std::cout << "\033[1;31m - commentaire present - \033[0m : " << sub << std::endl;
         else if (sub.compare("") != 0)
           std::cout << "\033[1;31m - Error trop de parametres et pas commentaire - \033[0m : " << sub << std::endl;
+        if (cmdok == 1)
+          std::cout << "\033[1;31m - 2nd parametres ?- \033[0m : " << std::endl;
       }
-      if ((sub.compare("push") == 0 && i == 0 ))
-        pushok = 1;
-      if (sub.compare("assert") == 0 && i == 0)
-        assertok = 1;
-      if (sub.compare("") != 0 && i == 0 && numberargument(str) == 1)
-        mylist = input_cmd(sub, mylist);
-      if (i == 1 && pushok == 1)
-        mylist = checktype(sub, mylist);
-      if (i == 1 && assertok == 1)
-        mylist = checktypeAssert(sub, mylist);
+      if (i == 0)
+      {
+        cmdok = check_cmd(sub);
+        if (sub.compare("push") == 0)
+          pushok = 1;
+        else if (sub.compare("assert") == 0)
+          assertok = 1;
+        else if (sub.compare("") != 0 && numberargument(str) == 1)
+          mylist = input_cmd(sub, mylist);
+        else if (sub.compare("") != 0)
+          mylist = input_cmd(sub, mylist);
+      }
+      if (i == 1)
+      {
+        if (pushok == 1)
+          mylist = checktype(sub, mylist);
+        else if (assertok == 1)
+          mylist = checktypeAssert(sub, mylist);
+        else if (cmdok == 1 && sub.substr(0,1).compare(";") == 0)
+        std::cout << "\033[1;31m - PK ce 2nd parametres - \033[0m : " << std::endl;
+      }
       i++;
     }
   }
+  // if ((cmdok == 0 && numberargument(str) == 1))
+  // std::cout << "\033[1;31m - euh ? - \033[0m " << std::endl;
   return mylist;
 }
 

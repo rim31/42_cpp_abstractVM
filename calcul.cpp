@@ -6,6 +6,19 @@
 #include <cstring>
 #include <regex>
 
+
+//==================  CMD en entree ==================
+int check_cmd(std::string str)
+{
+  if (str.compare("dump") == 0 || str.compare("add") == 0 || str.compare("sub") == 0
+  || str.compare("mul") == 0 || str.compare("div") == 0 || str.compare("mod") == 0
+  || str.compare("print") == 0 || str.compare("pop") == 0 || str.compare("exit") == 0)
+  // || str.compare("push") == 0 || str.compare("assert") == 0)
+    return 1;
+  return 0;
+}
+
+
 void dump(std::list<IOperand const *> mylist)
 {
   for (std::list<IOperand const *>::iterator it=mylist.begin(); it != mylist.end(); ++it)
