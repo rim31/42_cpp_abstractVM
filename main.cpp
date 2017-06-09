@@ -5,7 +5,8 @@
 #include <sstream>
 #include <iostream>
 #include <cstring>
-#include <regex>
+#include <fstream>
+
 
 
 //================ fonction pour trouver ) final===============
@@ -50,7 +51,7 @@ int checknumber(std::string nb, int point, int pos)
   }
   else
   {
-    if (nombredepoint == 1 && point == 1 && nb.find(".") >= 1 && nb.find(".") <= pos - 1) // on verifie le nombre "[0-9].[0.9]"
+    if ((nombredepoint == 1 && point == 1 && nb.find(".") >= 1 && nb.find(".") <= pos - 1) || point == 0) // on verifie le nombre "[0-9].[0.9]"
       return 1;    // std::cout << std::endl << "if faut mettre dans la list" << std::endl;
   }
   std::cout << std::endl << "pas le bon nombre de [0-9].[0-9]" << std::endl;
@@ -92,11 +93,11 @@ void searchAssert(std::string nb, std::list<IOperand const *> mylist)
 {
   for (std::list<IOperand const *>::iterator it=mylist.begin(); it != mylist.end(); ++it)
   {  // std::cout << ' ' << (*it)->toString();
-    if ( (*it)->toString().compare(nb) == 0)
+    if ( (*it)->toString().compare(nb) != 0)
     {
-      std::cout << ' ' << (*it)->toString() << std::endl;
-      return;
+      std::cout << " ASSERT error pas trouve" << (*it)->toString() << std::endl;
     }
+    return;
   }
 }
 
@@ -184,7 +185,7 @@ std::list<IOperand const*> input_cmd(std::string str, std::list<IOperand const *
   else if (str.compare("sub") == 0)
     mylist = cmd_sub(mylist);
   else if (str.compare("mul") == 0)
-    mylist = cmd_sub(mylist);
+    mylist = cmd_mul(mylist);
   else if (str.compare("div") == 0)
     mylist = cmd_div(mylist);
   else if (str.compare("mod") == 0)
@@ -197,6 +198,8 @@ std::list<IOperand const*> input_cmd(std::string str, std::list<IOperand const *
     std::cout << "\033[1;31m rajoute un type(nombre) apres assert\033[0m ";
   else if (str.compare("exit") != 0)
     std::cout << "\033[1;31m - ??? - \033[0m " << str << std::endl;
+  // else
+  //   std::cout << "\033[1;31m - ??? - connais pas\033[0m " << str << std::endl;
   return mylist;
 }
 
@@ -268,22 +271,54 @@ void parser(std::string str)
   if (exitok == 0)
     std::cout << "\033[1;31m - error - il manque un exit - \033[0m : " << std::endl;
 
-
-
 //====================================================================
 //===================      A SUPPRIMER     ===========================
 //====================================================================
 
-  std::cout << "mylist contains :" << std::endl;
+  std::cout << "\033[1;33mDEBUG => mylist contains : \033[0m" << std::endl;
   dump(mylist);
   std::cout << '\n';
+  //====================================================================
 }
+
+void lecture_fichier(std::string file)
+{
+  Factory fact;
+  std::string   ligne;
+  std::string myints[] = {""};
+  std::list<IOperand const *> mylist;
+  int exitok = 0;
+
+  std::ifstream fichier(file, std::ios::in);  // on ouvre le fichier en lecture
+
+      if(fichier)  // si l'ouverture a réussi
+      {
+        while(getline(fichier, ligne) && ligne.compare(";;") != 0)
+        {
+            mylist = my_split(ligne, mylist);
+          if (ligne.compare("exit") == 0)
+            exitok++;
+        }
+        if (exitok == 0)
+          std::cout << "\033[1;31m - error - il manque un exit - \033[0m : " << std::endl;
+        fichier.close();
+      }
+      else
+      {
+            std::cout << "Impossible d'ouvrir le fichier !" << std::endl;
+            exit(0);
+            parser(file);
+      }
+}
+
 
 int main(int ac, char **av)
 {
-  if (ac != 2)
-    return (0);//relancer la commande tant qu'on a pas exit
-  else
-    parser(av[1]);
+  if (ac == 1)
+    parser("");
+  else if (ac == 2)
+    lecture_fichier(av[1]);
+  else if (ac > 2)
+      return (0);//relancer la commande tant qu'on a pas exit
   return (0);
 }
