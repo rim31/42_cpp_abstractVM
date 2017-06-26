@@ -1,6 +1,7 @@
-push int32(42)
-push int32(33)
-add
+push int32(321461)
+push int32(-216543)
+mul
+print
 push float(44.55)
 mul
 push double(42.42)

@@ -152,11 +152,15 @@ std::list<IOperand const *> cmd_print(std::list<IOperand const *> mylist)
   if (mylist.size() >= 1)
   {
     IOperand const *nb1 = mylist.front();
-    if (std::stoi(nb1->toString()) >= 0 && std::stoi(nb1->toString()) <= 128 )
+    // if (std::stoi(nb1->toString()) >= 0 && std::stoi(nb1->toString()) <= 128 )
     {
-      //mettre unIF pour les caractere imprimables seulement ??????????
-      char val = std::stoi(nb1->toString());
-      std::cout << val << std::endl;
+      if (std::stoi(nb1->toString()) <= 20 || std::stoi(nb1->toString()) >= 127)
+        throw Except("\033[1;31m - caractere non imprimable - \033[0m\n");
+      else
+      {
+        char val = std::stoi(nb1->toString());
+        std::cout << val << std::endl;
+      }
     }
   }
   else
