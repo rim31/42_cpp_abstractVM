@@ -6,7 +6,6 @@
 #include <cstring>
 #include <regex>
 
-
 //===============on cherche le bon chiffre dans la liste pour ASSERT =================
 void dump(std::list<IOperand const *> mylist);
 std::list<IOperand const *> cmd_add(std::list<IOperand const *> mylist);
@@ -17,7 +16,3 @@ std::list<IOperand const *> cmd_mod(std::list<IOperand const *> mylist);
 std::list<IOperand const *> cmd_print(std::list<IOperand const *> mylist);
 std::list<IOperand const *> cmd_pop(std::list<IOperand const *> mylist);
 int check_cmd(std::string str);
-
-
-
-

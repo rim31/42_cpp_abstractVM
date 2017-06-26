@@ -1,10 +1,7 @@
+#include "Exception.hpp"
 #include "factory.hpp"
 #include "Operand.hpp"
-// #include "Exception.hpp"
-
-// #include "Operand.hpp"
 #include <iostream>
-
   //publlic constructor
   Factory::Factory(void) {
     this->create[0] = &Factory::createInt8;
@@ -35,7 +32,7 @@
 template<typename T>
  bool Factory::checkTypeCreateOperand(std::string const & value) const
 {
-  // Except err;
+  Except err;
 
   std::stringstream ss(value);
   long double       nb;
@@ -47,7 +44,7 @@ template<typename T>
   if (nb >= std::numeric_limits<T>::lowest() && nb <= std::numeric_limits<T>::max())
     return true;
   std::cout << "error taille" <<std::endl;
-  // throw Except("\033[1;31m  error taille \033[0m\n");
+  throw Except("\033[1;31m  error taille \033[0m\n");
 
   return false;//error format
 }

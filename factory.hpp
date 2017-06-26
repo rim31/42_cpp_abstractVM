@@ -2,6 +2,7 @@
 #define FACTORY_HPP
 
 #include "IOperand.hpp"
+
 class Factory
 {
   //publlic constructor

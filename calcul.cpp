@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cstring>
 #include <regex>
+#include "Exception.hpp"
 
 
 //==================  CMD en entree ==================
@@ -28,6 +29,8 @@ void dump(std::list<IOperand const *> mylist)
 //===================== +++++++++++++ ===============
 std::list<IOperand const *> cmd_add(std::list<IOperand const *> mylist)
 {
+  Except err;
+
   if (mylist.size() >= 2)
   {
     IOperand const *nb1 = mylist.front();
@@ -38,13 +41,17 @@ std::list<IOperand const *> cmd_add(std::list<IOperand const *> mylist)
     mylist.push_front(nb);    // std::cout << nb->toString();
   }
   else
-    std::cout << "\033[1;31m - erreur - pas assez de nombre dans la pile - \033[0m\n";
+    // std::cout << "\033[1;31m - erreur - pas assez de nombre dans la pile - \033[0m\n";
+    throw Except("\033[1;31m - erreur - pas assez de nombre dans la pile - \033[0m\n");
+
   return mylist;
 }
 
 //===================== ---------------- ===============
 std::list<IOperand const *> cmd_sub(std::list<IOperand const *> mylist)
 {
+  Except err;
+
   if (mylist.size() >= 2)
   {
     IOperand const *nb1 = mylist.front();
@@ -55,13 +62,16 @@ std::list<IOperand const *> cmd_sub(std::list<IOperand const *> mylist)
     mylist.push_front(nb);    // std::cout << nb->toString();
   }
   else
-    std::cout << "\033[1;31m - erreur - pas assez de nombre dans la pile - \033[0m\n";
+    // std::cout << "\033[1;31m - erreur - pas assez de nombre dans la pile - \033[0m\n";
+    throw Except("\033[1;31m - erreur - pas assez de nombre dans la pile - \033[0m\n");
   return mylist;
 }
 
 //===================== ****************** ===============
 std::list<IOperand const *> cmd_mul(std::list<IOperand const *> mylist)
 {
+  Except err;
+
   if (mylist.size() >= 2)
   {
     IOperand const *nb1 = mylist.front();
@@ -72,7 +82,8 @@ std::list<IOperand const *> cmd_mul(std::list<IOperand const *> mylist)
     mylist.push_front(nb);    // std::cout << nb->toString();
   }
   else
-    std::cout << "\033[1;31m - erreur - pas assez de nombre dans la pile - \033[0m\n";
+    // std::cout << "\033[1;31m - erreur - pas assez de nombre dans la pile - \033[0m\n";
+    throw Except("\033[1;31m - erreur - pas assez de nombre dans la pile - \033[0m\n");
   return mylist;
 }
 
@@ -80,6 +91,8 @@ std::list<IOperand const *> cmd_mul(std::list<IOperand const *> mylist)
 //===================== ///////////////////// ===============
 std::list<IOperand const *> cmd_div(std::list<IOperand const *> mylist)
 {
+  Except err;
+
   if (mylist.size() >= 2)
   {
     IOperand const *nb1 = mylist.front();
@@ -87,7 +100,9 @@ std::list<IOperand const *> cmd_div(std::list<IOperand const *> mylist)
     // std::cout << nb2->toString();;;
     if (std::stoi(nb2->toString()) == 0)
     {
-      std::cout << "\033[1;31m - erreur - division par 0 - y a pas ecrit qui divise qui :-P - \033[0m\n";
+      // std::cout << "\033[1;31m - erreur - division par 0 - y a pas ecrit qui divise qui :-P - \033[0m\n";
+      throw Except("\033[1;31m - erreur - division par 0 - y a pas ecrit qui divise qui :-P - \033[0m\n");
+
       return mylist;
     }
     mylist.pop_front();
@@ -96,13 +111,16 @@ std::list<IOperand const *> cmd_div(std::list<IOperand const *> mylist)
     mylist.push_front(nb);    // std::cout << nb->toString();
   }
   else
-    std::cout << "\033[1;31m - erreur - pas assez de nombre dans la pile - \033[0m\n";
+    // std::cout << "\033[1;31m - erreur - pas assez de nombre dans la pile - \033[0m\n";
+    throw Except("\033[1;31m - erreur - pas assez de nombre dans la pile - \033[0m\n");
   return mylist;
 }
 
 //===================== %%%%%%%%%%%%%%%%%%%%%%%% ===============
 std::list<IOperand const *> cmd_mod(std::list<IOperand const *> mylist)
 {
+  Except err;
+
   if (mylist.size() >= 2)
   {
     IOperand const *nb1 = mylist.front();
@@ -110,7 +128,9 @@ std::list<IOperand const *> cmd_mod(std::list<IOperand const *> mylist)
     // std::cout << nb2->toString();;;
     if (std::stoi(nb2->toString()) == 0)
     {
-      std::cout << "\033[1;31m - erreur - modulo par 0 - y a pas ecrit qui modulo qui :-P - \033[0m\n";
+      // std::cout << "\033[1;31m - erreur - modulo par 0 - y a pas ecrit qui modulo qui :-P - \033[0m\n";
+      throw Except("\033[1;31m - erreur - division par 0 - y a pas ecrit qui divise qui :-P - \033[0m\n");
+
       return mylist;
     }
     mylist.pop_front();
@@ -119,13 +139,16 @@ std::list<IOperand const *> cmd_mod(std::list<IOperand const *> mylist)
     mylist.push_front(nb);    // std::cout << nb->toString();
   }
   else
-    std::cout << "\033[1;31m - erreur - pas assez de nombre dans la pile - \033[0m\n";
+    // std::cout << "\033[1;31m - erreur - pas assez de nombre dans la pile - \033[0m\n";
+    throw Except("\033[1;31m - erreur - pas assez de nombre dans la pile - \033[0m\n");
   return mylist;
 }
 
 //===================== %print% ===============
 std::list<IOperand const *> cmd_print(std::list<IOperand const *> mylist)
 {
+  Except err;
+
   if (mylist.size() >= 1)
   {
     IOperand const *nb1 = mylist.front();
@@ -137,7 +160,8 @@ std::list<IOperand const *> cmd_print(std::list<IOperand const *> mylist)
     }
   }
   else
-    std::cout << "\033[1;31m - erreur - pas assez de nombre dans la pile - \033[0m\n";
+    // std::cout << "\033[1;31m - erreur - pas assez de nombre dans la pile - \033[0m\n";
+    throw Except("\033[1;31m - erreur - pas assez de nombre dans la pile - \033[0m\n");
   return mylist;
 }
 
@@ -145,6 +169,8 @@ std::list<IOperand const *> cmd_print(std::list<IOperand const *> mylist)
 //===================== +++++++++++++ ===============
 std::list<IOperand const *> cmd_pop(std::list<IOperand const *> mylist)
 {
+  Except err;
+
   if (mylist.size() >= 1)
   {
     IOperand const *nb1 = mylist.front();
@@ -152,6 +178,7 @@ std::list<IOperand const *> cmd_pop(std::list<IOperand const *> mylist)
   // std::cout << nb1->toString();
   }
   else
-    std::cout << "\033[1;31m - erreur - pas assez de nombre dans la pile - \033[0m\n";
+    // std::cout << "\033[1;31m - erreur - pas assez de nombre dans la pile - \033[0m\n";
+    throw Except("\033[1;31m - erreur - pas assez de nombre dans la pile - \033[0m\n");
   return mylist;
 }

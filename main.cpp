@@ -9,7 +9,7 @@
 #include <fstream>
 
 
-
+//class Except;
 //================ fonction pour trouver ) final===============
 size_t findclose(std::string str)
 {

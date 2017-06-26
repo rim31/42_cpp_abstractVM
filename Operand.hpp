@@ -3,12 +3,12 @@
 
 #include "IOperand.hpp"
 #include "factory.hpp"
+// #include "Exception.hpp"
 #include <iostream>
 #include <sstream>
 #include <string>
-
 //http://www.cplusplus.com/reference/list/list/
-
+//class Except;
 template <typename T>
 class Operand: public IOperand {
 
