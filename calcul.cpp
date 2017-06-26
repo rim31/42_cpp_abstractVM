@@ -131,6 +131,7 @@ std::list<IOperand const *> cmd_print(std::list<IOperand const *> mylist)
     IOperand const *nb1 = mylist.front();
     if (std::stoi(nb1->toString()) >= 0 && std::stoi(nb1->toString()) <= 128 )
     {
+      //mettre unIF pour les caractere imprimables seulement ??????????
       char val = std::stoi(nb1->toString());
       std::cout << val << std::endl;
     }

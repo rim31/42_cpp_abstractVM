@@ -25,6 +25,8 @@ size_t findclose(std::string str)
 //=============== on regarde si on a bien un nombre +/- et . ==================
 int checknumber(std::string nb, int point, int pos)
 {
+  Except err;
+
   int ret = 0;
   int nombredepoint = 0;
   int i = 0;
@@ -33,21 +35,26 @@ int checknumber(std::string nb, int point, int pos)
   {
     if (nombredepoint > point)
     {
-      std::cout << " . en trop pas le bon type" << std::endl;
+      // std::cout << " . en trop pas le bon type" << std::endl;
+      throw Except("\033[1;31m  . en trop pas le bon type \033[0m\n");
+
       return 0;
     }
     if (nb[i] == '.')
       nombredepoint++;
     else if (!isdigit(nb[i]) && nb[0] != '-')
     {
-      std::cout << " pas numerique" << std::endl;
+      // std::cout << " pas numerique" << std::endl;
+      throw Except("\033[1;31m  pas numerique \033[0m\n");
       return 0;
     }
     i++;
   }
   if (nombredepoint != point)
   {
-    std::cout << std::endl << "pas le bon nombre de ." << std::endl;
+    // std::cout << std::endl << "pas le bon nombre de ." << std::endl;
+    throw Except("\033[1;31m  pas le bon nombre de . \033[0m\n");
+
     return 0;
   }
   else
@@ -55,7 +62,9 @@ int checknumber(std::string nb, int point, int pos)
     if ((nombredepoint == 1 && point == 1 && nb.find(".") >= 1 && nb.find(".") <= pos - 1) || point == 0) // on verifie le nombre "[0-9].[0.9]"
       return 1;    // std::cout << std::endl << "if faut mettre dans la list" << std::endl;
   }
-  std::cout << std::endl << "pas le bon nombre de [0-9].[0-9]" << std::endl;
+  // std::cout << std::endl << "pas le bon nombre de [0-9].[0-9]" << std::endl;
+  throw Except("\033[1;31m  pas le bon nombre de [0-9].[0-9] \033[0m\n");
+
   return 0;
 }
 
@@ -63,6 +72,8 @@ int checknumber(std::string nb, int point, int pos)
 //================== on ajoute dans la liste avec le bon typ pour la COMMANDE PUSH ===============
 std::list<IOperand const *> checktype(std::string buff, std::list<IOperand const *> mylist)
 {
+  Except err;
+
   std::size_t pos;
   std::size_t init;
   std::string str;
@@ -83,10 +94,13 @@ std::list<IOperand const *> checktype(std::string buff, std::list<IOperand const
     else if (buff.substr(0,7).compare("double(") == 0 && checknumber(buff.substr(7,pos-7), 1, pos-7)/*PENSER A VERIFIER LA TAILLE DU INT*/)
         mylist.push_front (fact.createOperand(Double,buff.substr(7,pos-7)));
     else
-        std::cout << "\033[1;31m - Error commande - \033[0m : " << buff << std::endl;
+        // std::cout << "\033[1;31m - Error commande - \033[0m : " << buff << std::endl;
+        throw Except("\033[1;31m  - Error commande - \033[0m\n");
   }
   else
-    std::cout << " ) : pas trouve ERROR" << std::endl;
+    // std::cout << " ) : pas trouve ERROR" << std::endl;
+    throw Except("\033[1;31m  ) pas trouve \033[0m\n");
+
   return mylist;
 }
 
@@ -94,11 +108,14 @@ std::list<IOperand const *> checktype(std::string buff, std::list<IOperand const
 //===============on cherche le bon chiffre dans la liste pour ASSERT =================
 void searchAssert(std::string nb, std::list<IOperand const *> mylist)
 {
+  Except err;
+
   for (std::list<IOperand const *>::iterator it=mylist.begin(); it != mylist.end(); ++it)
   {  // std::cout << ' ' << (*it)->toString();
     if ( (*it)->toString().compare(nb) != 0)
     {
-      std::cout << " ASSERT error pas trouve" << (*it)->toString() << std::endl;
+      // std::cout << " ASSERT error pas trouve" << (*it)->toString() << std::endl;
+      throw Except("\033[1;31m  - ASSERT error pas trouve - \033[0m\n");
     }
     return;
   }
@@ -108,6 +125,8 @@ void searchAssert(std::string nb, std::list<IOperand const *> mylist)
 //===============fonction ASSERT, on verifie lsliste chaine ==================
 std::list<IOperand const *> checktypeAssert(std::string buff, std::list<IOperand const *> mylist)
 {
+  Except err;
+
   std::size_t pos;
   std::size_t init;
   std::string str;
@@ -127,10 +146,12 @@ std::list<IOperand const *> checktypeAssert(std::string buff, std::list<IOperand
     else if (buff.substr(0,7).compare("double(") == 0 && checknumber(buff.substr(7,pos-7), 1, pos-7)/*PENSER A VERIFIER LA TAILLE DU INT*/)
       searchAssert(buff.substr(7,pos-7), mylist);
     else
-      std::cout << "\033[1;31m - Error commande - \033[0m : " << buff << std::endl;
+      // std::cout << "\033[1;31m - Error commande - \033[0m : " << buff << std::endl;
+      throw Except("\033[1;31m  - Error commande - \033[0m\n");
   }
   else
-    std::cout << " ) : RE pas trouve ERROR" << std::endl;
+    // std::cout << " ) : RE pas trouve ERROR" << std::endl;
+    throw Except("\033[1;31m  ) pas trouve \033[0m\n");
   return mylist;
   // mylist.push_front (fact.createOperand(Int32,buff));
 }
@@ -154,6 +175,7 @@ int numberargument(const std::string s)
 
 int checknumberargument(const std::string s)
 {
+  Except err;
   std::istringstream iss(s);
   int i = 0;
   int error = 0;
@@ -166,10 +188,12 @@ int checknumberargument(const std::string s)
      if (i==3)
      {
        if (sub.substr(0,1).compare(";") == 0)
-        std::cout << "\033[1;31m - ; commentaire - \033[0m\n" << sub << std::endl;
+        // std::cout << "\033[1;31m - ; commentaire - \033[0m\n" << sub << std::endl;
+        throw Except("\033[1;31m - ; commentaire - \033[0m\n");
        else
         {
-          std::cout << "\033[1;31m - trop de parametres - \033[0m\n" << sub << std::endl;
+          // std::cout << "\033[1;31m - trop de parametres - \033[0m\n" << sub << std::endl;
+          throw Except("\033[1;31m - trop de parametres - \033[0m\n");
           error = 1;
         }
      }
@@ -200,17 +224,19 @@ std::list<IOperand const*> input_cmd(std::string str, std::list<IOperand const *
   else if (str.compare("pop") == 0)
     mylist = cmd_pop(mylist);
   else if (str.compare("assert") == 0)
-    std::cout << "\033[1;31m rajoute un type(nombre) apres assert\033[0m ";
+    // std::cout << "\033[1;31m rajoute un type(nombre) apres assert\033[0m ";
+    throw Except("\033[1;31m rajoute un type(nombre) apres assert\033[0m  ");
   else if (str.compare("exit") != 0)
-    std::cout << "\033[1;31m - ??? - \033[0m " << str << std::endl;
-  // else
-  //   std::cout << "\033[1;31m - ??? - connais pas\033[0m " << str << std::endl;
+    // std::cout << "\033[1;31m - ??? - \033[0m " << str << std::endl;
+    throw Except("\033[1;31m - ??? - \033[0m ");
+
   return mylist;
 }
 
 //=========================== parser SPLIT ========================
 std::list<IOperand const *> my_split(const std::string str, std::list<IOperand const *> mylist)
 {
+  Except err;
   std::string s = str;
   int i = 0;
   int pushok = 0;
@@ -231,11 +257,15 @@ std::list<IOperand const *> my_split(const std::string str, std::list<IOperand c
       if (i > 1)
       {
         if (sub.substr(0,1).compare(";") == 0)
-          std::cout << "\033[1;31m - commentaire present - \033[0m : " << sub << std::endl;
+          // std::cout << "\033[1;31m - commentaire present - \033[0m : " << sub << std::endl;
+          throw Except("\033[1;31m - commentaire present - \033[0m");
         else if (sub.compare("") != 0)
-          std::cout << "\033[1;31m - Error trop de parametres et pas commentaire - \033[0m : " << sub << std::endl;
+          // std::cout << "\033[1;31m - Error trop de parametres et pas commentaire - \033[0m : " << sub << std::endl;
+          throw Except("\033[1;31m - Error trop de parametres et pas commentaire - \033[0m :");
+
         if (cmdok == 1)
-          std::cout << "\033[1;31m - 2nd parametres ?- \033[0m : " << std::endl;
+          // std::cout << "\033[1;31m - 2nd parametres ?- \033[0m : " << std::endl;
+          throw Except("\033[1;31m - 2nd parametres ?- \033[0m ");
       }
       if (i == 0)
       {
@@ -256,7 +286,8 @@ std::list<IOperand const *> my_split(const std::string str, std::list<IOperand c
         else if (assertok == 1)
           mylist = checktypeAssert(sub, mylist);
         else if (cmdok == 1 && sub.substr(0,1).compare(";") == 0)
-        std::cout << "\033[1;31m - PK ce 2nd parametres - \033[0m : " << std::endl;
+        // std::cout << "\033[1;31m - PK ce 2nd parametres - \033[0m : " << std::endl;
+        throw Except("\033[1;31m - PK ce 2nd parametres - \033[0m ");
       }
       i++;
     }
@@ -269,6 +300,7 @@ std::list<IOperand const *> my_split(const std::string str, std::list<IOperand c
 //===================  PARSER ========================
 void parser(std::string str)
 {
+  Except err;
   Factory fact;
   std::string   buff;
   std::string myints[] = {""};
@@ -291,20 +323,24 @@ void parser(std::string str)
       exitok++;
   }
   if (exitok == 0)
-    std::cout << "\033[1;31m - error - il manque un exit - \033[0m : " << std::endl;
+    // std::cout << "\033[1;31m - error - il manque un exit - \033[0m : " << std::endl;
+    throw Except("\033[1;31m - error - il manque un exit - \033[0m ");
+
 
 //====================================================================
 //===================      A SUPPRIMER     ===========================
 //====================================================================
 
-  std::cout << "\033[1;33mDEBUG => mylist contains : \033[0m" << std::endl;
-  dump(mylist);
-  std::cout << '\n';
-  //====================================================================
+  // std::cout << "\033[1;33mDEBUG => mylist contains : \033[0m" << std::endl;
+  // dump(mylist);
+  // std::cout << '\n';
+
+//====================================================================
 }
 
 void lecture_fichier(std::string file)
 {
+  Except err;
   Factory fact;
   std::string   ligne;
   std::string myints[] = {""};
@@ -322,12 +358,13 @@ void lecture_fichier(std::string file)
             exitok++;
         }
         if (exitok == 0)
-          std::cout << "\033[1;31m - error - il manque un exit - \033[0m : " << std::endl;
+          throw Except("\033[1;31m - error - il manque un exit - \033[0m ");
+          // std::cout << "\033[1;31m - error - il manque un exit - \033[0m : " << std::endl;
         fichier.close();
       }
       else
       {
-            std::cout << "Impossible d'ouvrir le fichier !" << std::endl;
+            throw Except("Impossible d'ouvrir le fichier !");
             exit(0);
             parser(file);
       }
@@ -336,12 +373,38 @@ void lecture_fichier(std::string file)
 
 int main(int ac, char **av)
 {
-  Except err;
   if (ac == 1)
-    parser("");
+  {
+    try
+    {
+      parser("");
+    }
+    catch (std::exception & err)
+    {
+      std::cerr << err.what() << "\n";
+    }
+  }
   else if (ac == 2)
-    lecture_fichier(av[1]);
+  {
+    try
+    {
+      lecture_fichier(av[1]);
+    }
+    catch (std::exception & err)
+    {
+      std::cerr << err.what() << "\n";
+    }
+  }
   else if (ac > 2)
       return (0);//relancer la commande tant qu'on a pas exit
   return (0);
+
+
+  // if (ac == 1)
+  //   parser("");
+  // else if (ac == 2)
+  //     lecture_fichier(av[1]);
+  // else if (ac > 2)
+  //     return (0);//relancer la commande tant qu'on a pas exit
+  // return (0);
 }
